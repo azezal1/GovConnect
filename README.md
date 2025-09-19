@@ -30,22 +30,22 @@ A full-stack web application connecting citizens with government officials for f
 - **Data Export**: Download complaint data in CSV and PDF formats
 
 ### 🔧 Technical Features
-- **Frontend**: React.js with Tailwind CSS for modern, responsive UI
+- **Frontend**: React.js with Tailwind CSS for modern, responsive UI with glassmorphism design
 - **Backend**: Node.js with Express.js REST API
-- **Database**: PostgreSQL with Sequelize ORM
+- **Database**: SQLite with Sequelize ORM (ready for production PostgreSQL)
 - **Image Storage**: Cloudinary integration for photo uploads
 - **Maps**: Google Maps API and Leaflet for geolocation
 - **Authentication**: JWT-based secure login system
 - **Security**: Rate limiting, CORS, helmet, and input validation
-- **Responsive**: Mobile-first design with Tailwind CSS
+- **Responsive**: Mobile-first design with modern animations and micro-interactions
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- PostgreSQL database
-- Cloudinary account (for image uploads)
-- Google Maps API key
+- SQLite (included) or PostgreSQL for production
+- Cloudinary account (optional for image uploads)
+- Google Maps API key (optional)
 
 ### Installation
 

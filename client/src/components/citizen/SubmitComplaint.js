@@ -1,8 +1,24 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaCamera, FaMapMarkerAlt, FaUpload, FaSpinner } from 'react-icons/fa';
+import { 
+  FaCamera, 
+  FaMapMarkerAlt, 
+  FaUpload, 
+  FaSpinner, 
+  FaTimes, 
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaLocationArrow,
+  FaImage,
+  FaFileAlt
+} from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Card from '../shared/Card';
+import Button from '../shared/Button';
+import Input from '../shared/Input';
+import TextArea from '../shared/TextArea';
 
 const SubmitComplaint = () => {
   const [imageFile, setImageFile] = useState(null);
@@ -105,7 +121,11 @@ const SubmitComplaint = () => {
       formData.append('description', data.description);
       formData.append('category', data.category);
       formData.append('priority', data.priority);
-      formData.append('location', JSON.stringify(location));
+      formData.append('location', JSON.stringify({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        address: location.address || 'Address not provided'
+      }));
       formData.append('image', imageFile);
       formData.append('isAnonymous', data.isAnonymous || false);
 
@@ -328,21 +348,16 @@ const SubmitComplaint = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
-            <button
+          <div className="flex justify-end">
+            <Button
               type="submit"
-              disabled={submitting}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+              variant="primary"
+              loading={submitting}
+              icon={<FaUpload />}
+              disabled={!imageFile || !location}
             >
-              {submitting ? (
-                <>
-                  <FaSpinner className="animate-spin" />
-                  <span>Submitting...</span>
-                </>
-              ) : (
-                <span>Submit Complaint</span>
-              )}
-            </button>
+              {submitting ? 'Submitting...' : 'Submit Complaint'}
+            </Button>
           </div>
         </form>
       </div>
