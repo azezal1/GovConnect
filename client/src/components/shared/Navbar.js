@@ -73,7 +73,7 @@ const Navbar = () => {
                     ? 'text-primary-600'
                     : scrolled 
                       ? 'text-gray-700 hover:text-primary-600' 
-                      : 'text-white hover:text-primary-200'
+                      : 'text-gray-800 hover:text-primary-600'
                 }`}
               >
                 {link.name}
@@ -89,8 +89,8 @@ const Navbar = () => {
             {user ? (
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                  <FaUser className={`text-sm ${scrolled ? 'text-gray-600' : 'text-white'}`} />
-                  <span className={`text-sm font-medium ${scrolled ? 'text-gray-700' : 'text-white'}`}>
+                  <FaUser className={`text-sm ${scrolled ? 'text-gray-600' : 'text-gray-700'}`} />
+                  <span className={`text-sm font-medium ${scrolled ? 'text-gray-700' : 'text-gray-800'}`}>
                     {user.name}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ const Navbar = () => {
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                     scrolled
                       ? 'text-primary-600 hover:text-primary-700 hover:bg-primary-50'
-                      : 'text-white hover:text-primary-200 hover:bg-white/10'
+                      : 'text-gray-800 hover:text-primary-600 hover:bg-white/10'
                   }`}
                 >
                   Login
@@ -131,7 +131,7 @@ const Navbar = () => {
               className={`p-2 rounded-lg transition-all duration-300 ${
                 scrolled 
                   ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-white hover:bg-white/10'
+                  : 'text-gray-800 hover:bg-white/10'
               }`}
             >
               {isOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}

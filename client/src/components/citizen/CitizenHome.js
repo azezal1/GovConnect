@@ -2,22 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { 
   FaExclamationTriangle, 
   FaClock, 
-  FaCheckCircle, 
   FaSpinner, 
-  FaTrophy, 
+  FaCheckCircle, 
+  FaTrophy,
   FaPlus,
   FaEye,
   FaMapMarkerAlt,
   FaCalendarAlt,
-  FaAward,
-  FaChartLine,
-  FaBell
+  FaBell,
+  FaHistory
 } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Card from '../shared/Card';
 import Button from '../shared/Button';
+import AnimatedButton from '../shared/AnimatedButton';
+import AnimatedChart from '../shared/AnimatedChart';
 
 const CitizenHome = () => {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ const CitizenHome = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const [dashboardResponse, complaintsResponse] = await Promise.all([
+      const [dashboardResponse] = await Promise.all([
         axios.get('/api/citizen/dashboard'),
         axios.get('/api/citizen/complaints?limit=5')
       ]);
@@ -211,21 +212,51 @@ const CitizenHome = () => {
           </Card>
         </div>
 
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AnimatedChart
+            type="donut"
+            title="Complaint Status Distribution"
+            data={[
+              { label: 'Pending', value: stats.pendingComplaints },
+              { label: 'In Progress', value: stats.inProgressComplaints },
+              { label: 'Resolved', value: stats.resolvedComplaints }
+            ]}
+            colors={['#f59e0b', '#ef4444', '#10b981']}
+          />
+          
+          <AnimatedChart
+            type="bar"
+            title="Monthly Complaint Trends"
+            data={[
+              { label: 'Jan', value: 12 },
+              { label: 'Feb', value: 8 },
+              { label: 'Mar', value: 15 },
+              { label: 'Apr', value: 10 },
+              { label: 'May', value: stats.totalComplaints }
+            ]}
+            colors={['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b']}
+          />
+        </div>
+
         {/* Recent Complaints */}
         <Card className="p-6" hover={true} gradient={true}>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Recent Complaints</h2>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <FaHistory className="mr-3 text-blue-500" />
+                Recent Complaints
+              </h2>
               <p className="text-gray-600">Your latest reported issues</p>
             </div>
-            <Button 
+            <AnimatedButton 
               variant="outline" 
               size="sm" 
               onClick={() => navigate('/citizen/complaints')}
-              icon={<FaEye />}
+              icon={FaEye}
             >
               View All
-            </Button>
+            </AnimatedButton>
           </div>
           
           {recentComplaints.length === 0 ? (

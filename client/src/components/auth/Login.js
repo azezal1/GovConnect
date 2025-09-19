@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaUsers, FaBuilding, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaUsers, FaBuilding, FaEnvelope, FaLock, FaArrowRight, FaShieldAlt } from 'react-icons/fa';
+import AnimatedInput from '../shared/AnimatedInput';
+import AnimatedButton from '../shared/AnimatedButton';
 
 const Login = () => {
   const [userType, setUserType] = useState('citizen');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [floatingElements, setFloatingElements] = useState([]);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -15,8 +18,31 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setError
-  } = useForm();
+    setError,
+    watch
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  const watchedEmail = watch('email');
+  const watchedPassword = watch('password');
+
+  useEffect(() => {
+    setIsVisible(true);
+    // Generate floating elements for background animation
+    const elements = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 60 + 20,
+      delay: Math.random() * 5,
+      duration: Math.random() * 10 + 10,
+    }));
+    setFloatingElements(elements);
+  }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -39,68 +65,98 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-primary-600 rounded-full flex items-center justify-center">
-            {userType === 'citizen' ? (
-              <FaUsers className="h-6 w-6 text-white" />
-            ) : (
-              <FaBuilding className="h-6 w-6 text-white" />
-            )}
-          </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            {userType === 'citizen' 
-              ? 'Access your citizen dashboard and track complaints'
-              : 'Access government portal and manage complaints'
-            }
-          </p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 morph-bg">
+        {/* Floating Elements */}
+        {floatingElements.map((element) => (
+          <div
+            key={element.id}
+            className="absolute rounded-full bg-white/10 backdrop-blur-sm animate-float"
+            style={{
+              left: `${element.x}%`,
+              top: `${element.y}%`,
+              width: `${element.size}px`,
+              height: `${element.size}px`,
+              animationDelay: `${element.delay}s`,
+              animationDuration: `${element.duration}s`,
+            }}
+          />
+        ))}
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }} />
+      </div>
 
-        {/* User Type Toggle */}
-        <div className="bg-white rounded-lg p-4 shadow-soft">
-          <div className="flex rounded-md shadow-sm">
-            <button
-              type="button"
-              onClick={() => setUserType('citizen')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-l-md border ${
-                userType === 'citizen'
-                  ? 'bg-primary-600 text-white border-primary-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <FaUsers className="inline mr-2" />
-              Citizen
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType('government')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-r-md border ${
-                userType === 'government'
-                  ? 'bg-secondary-600 text-white border-secondary-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <FaBuilding className="inline mr-2" />
-              Government
-            </button>
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
+        <div className={`w-full max-w-md transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+          
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 mb-6 animate-bounce-gentle">
+              <FaShieldAlt className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2 gradient-text">
+              Welcome Back
+            </h1>
+            <p className="text-white/80 text-lg">
+              Sign in to access your {userType} portal
+            </p>
           </div>
-        </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="bg-white rounded-lg shadow-soft p-6">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <input
-                  id="email"
+          {/* User Type Toggle */}
+          <div className="mb-8">
+            <div className="glass-effect rounded-2xl p-2 border border-white/20">
+              <div className="flex relative">
+                <div className={`absolute top-0 left-0 w-1/2 h-full bg-white/20 rounded-xl transition-transform duration-300 ${
+                  userType === 'government' ? 'transform translate-x-full' : ''
+                }`} />
+                
+                <button
+                  type="button"
+                  onClick={() => setUserType('citizen')}
+                  className={`relative z-10 flex-1 py-3 px-4 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                    userType === 'citizen'
+                      ? 'text-white'
+                      : 'text-white/70 hover:text-white/90'
+                  }`}
+                >
+                  <FaUsers className="inline mr-2" />
+                  Citizen
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setUserType('government')}
+                  className={`relative z-10 flex-1 py-3 px-4 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                    userType === 'government'
+                      ? 'text-white'
+                      : 'text-white/70 hover:text-white/90'
+                  }`}
+                >
+                  <FaBuilding className="inline mr-2" />
+                  Government
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="glass-effect rounded-2xl p-8 border border-white/20 backdrop-blur-md">
+              <div className="space-y-6">
+                
+                {/* Email Field */}
+                <AnimatedInput
+                  label="Email Address"
                   type="email"
-                  autoComplete="email"
+                  icon={FaEnvelope}
+                  value={watchedEmail}
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -108,88 +164,90 @@ const Login = () => {
                       message: 'Invalid email address'
                     }
                   })}
-                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.email ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter your email"
+                  error={errors.email?.message}
+                  className="animate-slide-up"
+                  style={{ animationDelay: '0.1s' }}
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    {...register('password', {
-                      required: 'Password is required',
-                      minLength: {
-                        value: 6,
-                        message: 'Password must be at least 6 characters'
-                      }
-                    })}
-                    className={`mt-1 block w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 ${
-                      errors.password ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                {/* Password Field */}
+                <AnimatedInput
+                  label="Password"
+                  type="password"
+                  icon={FaLock}
+                  value={watchedPassword}
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters'
+                    }
+                  })}
+                  error={errors.password?.message}
+                  className="animate-slide-up"
+                  style={{ animationDelay: '0.2s' }}
+                />
+
+                {/* Forgot Password */}
+                <div className="text-right animate-slide-up" style={{ animationDelay: '0.3s' }}>
+                  <Link
+                    to="/forgot-password"
+                    className="text-white/80 hover:text-white text-sm font-medium transition-colors duration-200 hover:underline"
                   >
-                    {showPassword ? (
-                      <FaEyeSlash className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <FaEye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
+                    Forgot your password?
+                  </Link>
                 </div>
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+
+                {/* Error Message */}
+                {errors.root && (
+                  <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 animate-slide-up">
+                    <p className="text-red-200 text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.root.message}
+                    </p>
+                  </div>
                 )}
+
+                {/* Submit Button */}
+                <AnimatedButton
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  loading={loading}
+                  disabled={loading}
+                  icon={FaArrowRight}
+                  iconPosition="right"
+                  className="w-full animate-slide-up"
+                  style={{ animationDelay: '0.4s' }}
+                >
+                  {loading ? 'Signing In...' : 'Sign In'}
+                </AnimatedButton>
               </div>
             </div>
 
-            {errors.root && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{errors.root.message}</p>
-              </div>
-            )}
+            {/* Register Link */}
+            <div className="text-center animate-slide-up" style={{ animationDelay: '0.5s' }}>
+              <p className="text-white/80">
+                Don't have an account?{' '}
+                <Link
+                  to="/register"
+                  className="text-white font-semibold hover:text-white/90 transition-colors duration-200 hover:underline"
+                >
+                  Create Account
+                </Link>
+              </p>
+            </div>
+          </form>
 
-            <div className="mt-6">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <div className="spinner mr-2"></div>
-                ) : null}
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
+          {/* Security Badge */}
+          <div className="mt-8 text-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <div className="inline-flex items-center text-white/60 text-sm">
+              <FaShieldAlt className="w-4 h-4 mr-2" />
+              Secured with 256-bit SSL encryption
             </div>
           </div>
-
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <button
-                type="button"
-                onClick={() => navigate('/register')}
-                className="font-medium text-primary-600 hover:text-primary-500"
-              >
-                Register here
-              </button>
-            </p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   FaNewspaper, 
   FaCalendarAlt, 
@@ -6,7 +6,6 @@ import {
   FaTag, 
   FaArrowRight,
   FaSearch,
-  FaFilter,
   FaBullhorn,
   FaCog,
   FaAward
@@ -28,7 +27,7 @@ const Updates = () => {
     { id: 'achievements', name: 'Achievements', icon: FaAward, color: 'from-orange-500 to-red-500' },
   ];
 
-  const updates = [
+  const updates = useMemo(() => [
     {
       id: 1,
       title: "New AI-Powered Issue Categorization",
@@ -101,7 +100,7 @@ const Updates = () => {
       image: "/api/placeholder/400/250",
       tags: ["Notifications", "Real-time", "Updates"]
     }
-  ];
+  ], []);
 
   useEffect(() => {
     let filtered = updates;
@@ -119,7 +118,7 @@ const Updates = () => {
     }
     
     setFilteredUpdates(filtered);
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, updates]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
